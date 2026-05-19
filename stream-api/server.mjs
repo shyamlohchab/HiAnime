@@ -223,6 +223,10 @@ app.get('/proxy', async (req, res) => {
   
   if (!targetUrl) return res.status(400).send("No URL provided");
 
+  const host = req.get('host');
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const base = `${protocol}://${host}`;
+
   try {
     const headers = { 
       ...HEADERS, 
@@ -252,7 +256,7 @@ app.get('/proxy', async (req, res) => {
             if (!absoluteUrl.startsWith('http')) {
               absoluteUrl = new URL(absoluteUrl, baseUrl.href).href;
             }
-            const proxiedUrl = `http://localhost:8000/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
+            const proxiedUrl = `${base}/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
             return line.replace(/URI="[^"]+"/, `URI="${proxiedUrl}"`);
           }
         }
@@ -265,7 +269,7 @@ app.get('/proxy', async (req, res) => {
             if (!absoluteUrl.startsWith('http')) {
               absoluteUrl = new URL(absoluteUrl, baseUrl.href).href;
             }
-            const proxiedUrl = `http://localhost:8000/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
+            const proxiedUrl = `${base}/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
             return line.replace(/URI="[^"]+"/, `URI="${proxiedUrl}"`);
           }
         }
@@ -275,7 +279,7 @@ app.get('/proxy', async (req, res) => {
           if (!line.startsWith('http')) {
             absoluteUrl = new URL(line, baseUrl.href).href;
           }
-          return `http://localhost:8000/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
+          return `${base}/proxy?url=${encodeURIComponent(absoluteUrl)}&referer=${encodeURIComponent(referer)}`;
         }
         return line;
       });

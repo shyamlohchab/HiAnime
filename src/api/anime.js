@@ -1,5 +1,7 @@
 import { gql, normalizeMedia } from './api'
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 // Fragment for media fields
 const MEDIA_FIELDS = `
   id title { romaji english native }
@@ -151,7 +153,7 @@ export const getEpisodeSources = async (episodeId, server = 'beep', category = '
     const [anilistId, epNum] = episodeId.split('-ep-')
     console.log(`Fetching stream for AniList ID: ${anilistId}, Ep: ${epNum}, Server: ${server}, Type: ${category} from local AnimeX proxy`)
     
-    const res = await fetch(`http://localhost:8000/stream/${anilistId}/${epNum}?server=${server}&type=${category}`)
+    const res = await fetch(`${API_BASE}/stream/${anilistId}/${epNum}?server=${server}&type=${category}`)
     const data = await res.json()
     
     if (data.success && data.data) {
@@ -182,7 +184,7 @@ export const getEpisodeSources = async (episodeId, server = 'beep', category = '
 export const getEpisodeServers = async (episodeId) => {
   try {
     const [anilistId, epNum] = episodeId.split('-ep-')
-    const res = await fetch(`http://localhost:8000/servers/${anilistId}/${epNum}`)
+    const res = await fetch(`${API_BASE}/servers/${anilistId}/${epNum}`)
     const data = await res.json()
     
     if (data.success && data.servers) {
